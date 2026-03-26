@@ -1,0 +1,987 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>우리들의 삿포로 여행 🍁</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                    },
+                    colors: {
+                        // 톤 다운된 일본 감성의 색상 팔레트
+                        washi: '#F7F5F0',    // 화선지 같은 따뜻한 배경색
+                        momiji: '#B85D43',   // 톤다운된 단풍/벽돌색 (일정)
+                        matcha: '#7A8B6A',   // 차분한 말차/자연색 (숙소)
+                        sakura: '#C79695',   // 톤다운된 더스티 핑크 (예산)
+                        tsuchi: '#5E4B43',   // 깊은 흙/나무색 (꿀팁)
+                        sumi: '#2C2A29',     // 먹물 같은 차분한 검은색 (텍스트)
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #e5e5e5;
+            -webkit-tap-highlight-color: transparent;
+            color: #2C2A29;
+        }
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: #F7F5F0;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .app-view {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+            padding-bottom: 40px;
+        }
+        .app-view.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        /* 메인 메뉴 카드 호버 효과 (모바일 터치 반응성) */
+        .menu-card:active {
+            transform: scale(0.96);
+        }
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- ==================== HOME VIEW (메인 화면) ==================== -->
+    <div id="view-home" class="app-view active">
+        <!-- 메인 헤더 (감성적인 이미지 느낌의 상단) -->
+        <header class="bg-tsuchi text-washi p-8 rounded-b-[40px] shadow-lg relative overflow-hidden">
+            <!-- 장식용 배경 원 -->
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-white opacity-5 rounded-full"></div>
+            <div class="absolute -left-5 -bottom-5 w-24 h-24 bg-momiji opacity-20 rounded-full"></div>
+            
+            <p class="text-sm font-light tracking-widest mb-2 opacity-80 uppercase">Sapporo, Hokkaido</p>
+            <h1 class="text-3xl font-bold tracking-tight mb-2 leading-snug">우리들의<br>삿포로 여행 🍁</h1>
+            <p class="text-sm opacity-90 font-medium bg-black/20 inline-block px-3 py-1 rounded-full mt-2">
+                <i class="far fa-calendar-alt mr-1"></i> 2026. 09. 26 - 09. 29
+            </p>
+        </header>
+
+        <!-- 4 Grid Menu -->
+        <div class="p-6">
+            <h2 class="text-lg font-bold text-sumi mb-4 ml-1">여행 가이드</h2>
+            <div class="grid grid-cols-2 gap-4">
+                
+                <!-- 1. 일정 -->
+                <button onclick="showView('schedule')" class="menu-card bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition-transform aspect-square relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-momiji opacity-0 group-hover:opacity-5 transition-opacity"></div>
+                    <div class="w-14 h-14 rounded-full bg-momiji/10 text-momiji flex items-center justify-center text-2xl mb-3">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3 class="font-bold text-sumi text-lg">일정</h3>
+                    <p class="text-xs text-gray-400 mt-1">3박 4일 코스</p>
+                </button>
+
+                <!-- 2. 숙소 -->
+                <button onclick="showView('accomm')" class="menu-card bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition-transform aspect-square relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-matcha opacity-0 group-hover:opacity-5 transition-opacity"></div>
+                    <div class="w-14 h-14 rounded-full bg-matcha/10 text-matcha flex items-center justify-center text-2xl mb-3">
+                        <i class="fas fa-bed"></i>
+                    </div>
+                    <h3 class="font-bold text-sumi text-lg">숙소</h3>
+                    <p class="text-xs text-gray-400 mt-1">취향별 추천</p>
+                </button>
+
+                <!-- 3. 예산 -->
+                <button onclick="showView('budget')" class="menu-card bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition-transform aspect-square relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-sakura opacity-0 group-hover:opacity-5 transition-opacity"></div>
+                    <div class="w-14 h-14 rounded-full bg-sakura/10 text-sakura flex items-center justify-center text-2xl mb-3">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <h3 class="font-bold text-sumi text-lg">예산</h3>
+                    <p class="text-xs text-gray-400 mt-1">경비 & 환전</p>
+                </button>
+
+                <!-- 4. 꿀팁 -->
+                <button onclick="showView('tips')" class="menu-card bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition-transform aspect-square relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-tsuchi opacity-0 group-hover:opacity-5 transition-opacity"></div>
+                    <div class="w-14 h-14 rounded-full bg-tsuchi/10 text-tsuchi flex items-center justify-center text-2xl mb-3">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3 class="font-bold text-sumi text-lg">꿀팁</h3>
+                    <p class="text-xs text-gray-400 mt-1">쇼핑 & 교통</p>
+                </button>
+
+            </div>
+        </div>
+        
+        <!-- 날씨/인포그래픽 위젯 느낌 -->
+        <div class="px-6 pb-6">
+            <div class="bg-gradient-to-r from-[#D6DCE5] to-[#E9ECEF] rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                <div>
+                    <span class="text-xs font-bold text-gray-500 uppercase">9월 말 날씨 예상</span>
+                    <div class="font-bold text-sumi text-lg mt-1">10°C ~ 18°C</div>
+                    <div class="text-xs text-gray-600 mt-1">가을 아우터 챙기기 필수! 🧥</div>
+                </div>
+                <i class="fas fa-cloud-sun text-4xl text-gray-400"></i>
+            </div>
+        </div>
+        
+        <!-- 교통 노선도 버튼 (메인 최하단으로 이동) -->
+        <div class="px-6 pb-6 mt-4">
+            <a href="https://www.city.sapporo.jp/st/korean/routemap.html" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between bg-tsuchi text-washi p-4 rounded-2xl shadow-sm hover:opacity-90 transition-opacity">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white/20 w-10 h-10 rounded-full flex items-center justify-center"><i class="fas fa-subway"></i></div>
+                    <span class="font-bold text-sm">삿포로 지하철 노선도 (한글)</span>
+                </div>
+                <i class="fas fa-external-link-alt opacity-70"></i>
+            </a>
+        </div>
+    </div>
+
+
+<!-- ==================== SUB VIEWS (상세 페이지들) ==================== -->
+
+    <!-- 공통 네비게이션 헤더 템플릿용 클래스 -->
+    <style>
+        .sub-header {
+            position: sticky; top: 0; z-index: 50; 
+            background: rgba(247, 245, 240, 0.95); 
+            backdrop-filter: blur(8px);
+            padding: 1rem 1.25rem;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .back-btn {
+            width: 40px; h-40px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            color: #5E4B43;
+        }
+    </style>
+
+    <!-- 1. 일정 (Itinerary) -->
+<div id="view-schedule" class="app-view">
+    <div class="sub-header">
+        <button onclick="goHome()" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+        <h2 class="font-bold text-lg text-sumi">추천 일정</h2>
+        <div class="w-10"></div> <!-- 여백 맞춤용 -->
+    </div>
+    
+    <!-- 탭 메뉴 -->
+    <div class="flex overflow-x-auto gap-2 px-5 py-3 no-scrollbar border-b border-gray-200 sticky top-[65px] bg-[#F7F5F0] z-40">
+        <button onclick="showDay('day1')" id="tab-day1" class="day-tab whitespace-nowrap px-4 py-2 rounded-full font-bold text-sm bg-momiji text-white shadow-sm transition-all">1일차 (9/26)</button>
+        <button onclick="showDay('day2')" id="tab-day2" class="day-tab whitespace-nowrap px-4 py-2 rounded-full font-bold text-sm bg-white text-gray-500 border border-gray-200 transition-all">2일차</button>
+        <button onclick="showDay('day3')" id="tab-day3" class="day-tab whitespace-nowrap px-4 py-2 rounded-full font-bold text-sm bg-white text-gray-500 border border-gray-200 transition-all">3일차</button>
+        <button onclick="showDay('day4')" id="tab-day4" class="day-tab whitespace-nowrap px-4 py-2 rounded-full font-bold text-sm bg-white text-gray-500 border border-gray-200 transition-all">4일차</button>
+        <button onclick="showDay('extra')" id="tab-extra" class="day-tab whitespace-nowrap px-4 py-2 rounded-full font-bold text-sm bg-white text-gray-500 border border-gray-200 transition-all">기타 추천 여행지</button>
+    </div>
+
+    <div class="p-5">
+        <p class="text-sm text-gray-500 mb-5 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+            <i class="fas fa-info-circle text-momiji mr-1"></i> 장소 옆 아이콘(<i class="fas fa-map-marker-alt text-momiji mx-1"></i>)을 누르면 구글 맵으로 연결됩니다.
+        </p>
+
+        <!-- Day 1 Content -->
+        <div id="content-day1" class="day-content block animate-[fadeIn_0.3s_ease-in-out]">
+            <h3 class="font-bold text-lg text-sumi mb-1">삿포로 입성 & 위스키</h3>
+            <p class="text-xs text-gray-500 mb-6">9/26 (목)</p>
+            
+            <div class="relative">
+                <!-- 타임라인 선 -->
+                <div class="absolute left-[23px] top-2 bottom-6 w-[2px] bg-gray-200"></div>
+                
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">12:00</div>
+                    <div class="flex-1 pl-4 pt-1">인천 출발 ✈️</div>
+                </div>
+                <!-- 이동 수단 -->
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-plane bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">비행기 (약 2시간 30분)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">15:00</div>
+                    <div class="flex-1 pl-4 pt-1">신치토세 공항 도착 & 입국심사</div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-train bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">JR 쾌속 에어포트 (약 40분 / 1,150엔)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">16:30</div>
+                    <div class="flex-1 pl-4 pt-1">호텔 체크인 & 휴식</div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-walking bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">도보 (역에서 숙소로 이동)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">17:30</div>
+                    <div class="flex-1 pl-4 pt-1">오도리 공원 & 삿포로 TV 타워 
+                        <a href="https://www.google.com/maps/search/?api=1&query=삿포로+TV타워" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                    </div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-walking bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">도보 (약 10~15분)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">19:00</div>
+                    <div class="flex-1 pl-4 pt-1">저녁: 징기스칸 (다루마 본점) 🥩 
+                        <a href="https://www.google.com/maps/search/?api=1&query=삿포로+다루마+본점" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                    </div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-walking bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">도보 (약 5분)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">21:00</div>
+                    <div class="flex-1 pl-4 pt-1">니카상 간판 & 스스키노 야경 
+                        <a href="https://www.google.com/maps/search/?api=1&query=스스키노+니카상" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                    </div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-walking bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">도보 (주변 이동)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">22:00</div>
+                    <div class="flex-1 pl-4 pt-1">
+                        <span class="font-bold text-sumi">위스키 & 칵테일 한 잔 🥃</span>
+                        <div class="bg-white p-3 rounded-lg border border-gray-200 mt-2 text-xs">
+                            <p class="mb-1">• <b>Bossa:</b> 빈티지 감성 재즈 LP 바 
+                                <a href="https://www.google.com/maps/search/?api=1&query=삿포로+Bossa" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                            </p>
+                            <p>• <b>Bar Yamazaki:</b> 최고의 클래식 바 
+                                <a href="https://www.google.com/maps/search/?api=1&query=Bar+Yamazaki+Sapporo" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 대체 일정 (Day 1) -->
+            <div class="mt-8 bg-white border border-momiji/20 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                <div class="absolute right-0 top-0 w-16 h-16 bg-momiji/5 rounded-bl-full"></div>
+                <div class="flex items-center gap-2 font-bold text-momiji mb-2 relative z-10">
+                    <i class="fas fa-random"></i>
+                    <span>추천 대체 일정</span>
+                </div>
+                <h4 class="font-bold text-sumi text-sm mb-1 relative z-10">오도리 공원 대신 ➡️ 삿포로 맥주박물관</h4>
+                <p class="text-xs text-gray-600 leading-relaxed relative z-10">
+                    <span class="font-semibold text-gray-800">추천 이유:</span> 삿포로의 상징적인 붉은 벽돌 건물에서 멋진 사진을 남기고 갓 뽑은 생맥주 샘플러를 즐길 수 있습니다. 맥주를 좋아하신다면 도착 첫날의 피로를 풀기에 완벽합니다! (택시로 약 10~15분 이동 권장)
+                </p>
+            </div>
+        </div>
+
+        <!-- Day 2 Content -->
+        <div id="content-day2" class="day-content hidden animate-[fadeIn_0.3s_ease-in-out]">
+            <h3 class="font-bold text-lg text-sumi mb-1">낭만의 오타루</h3>
+            <p class="text-xs text-gray-500 mb-6">9/27 (금)</p>
+            
+            <div class="relative">
+                <div class="absolute left-[23px] top-2 bottom-6 w-[2px] bg-gray-200"></div>
+                
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">10:00</div>
+                    <div class="flex-1 pl-4 pt-1">삿포로역 출발 🚂</div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-train bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">JR 기차 (약 45분 / 750엔) *우측 창가 필수</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">11:00</div>
+                    <div class="flex-1 pl-4 pt-1">사카이마치 도리 & 르타오 🍰
+                        <a href="https://www.google.com/maps/search/?api=1&query=오타루+르타오+본점" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                    </div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-walking bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">도보 (상점가 구경)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">13:30</div>
+                    <div class="flex-1 pl-4 pt-1">점심: 스시야도리 (스시거리) 🍣
+                        <a href="https://www.google.com/maps/search/?api=1&query=오타루+스시야도리" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                    </div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-walking bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">도보 (약 10분)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">17:00</div>
+                    <div class="flex-1 pl-4 pt-1">오타루 운하 일몰 & 야경 감상 ✨
+                        <a href="https://www.google.com/maps/search/?api=1&query=오타루+운하" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                    </div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-train bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">JR 기차 복귀 (약 45분 / 750엔)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">19:30</div>
+                    <div class="flex-1 pl-4 pt-1">삿포로 복귀 & 저녁: 스프카레 🍛
+                        <a href="https://www.google.com/maps/search/?api=1&query=삿포로+가라쿠" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 대체 일정 (Day 2) -->
+            <div class="mt-8 bg-white border border-momiji/20 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                <div class="absolute right-0 top-0 w-16 h-16 bg-momiji/5 rounded-bl-full"></div>
+                <div class="flex items-center gap-2 font-bold text-momiji mb-2 relative z-10">
+                    <i class="fas fa-random"></i>
+                    <span>추천 대체 일정</span>
+                </div>
+                <h4 class="font-bold text-sumi text-sm mb-1 relative z-10">오타루 대신 ➡️ 비에이/후라노 일일 버스투어</h4>
+                <p class="text-xs text-gray-600 leading-relaxed relative z-10">
+                    <span class="font-semibold text-gray-800">추천 이유:</span> 오타루의 아기자기한 상점가보다 홋카이도 특유의 광활한 대자연과 패치워크 언덕, 청의 호수를 보고 싶다면 버스투어를 추천합니다. (한국에서 '마이리얼트립' 등 여행사 통해 사전 예약 필수. 종일 소요되며 인당 약 6~8만원 선)
+                </p>
+            </div>
+        </div>
+
+        <!-- Day 3 Content -->
+        <div id="content-day3" class="day-content hidden animate-[fadeIn_0.3s_ease-in-out]">
+            <h3 class="font-bold text-lg text-sumi mb-1">단풍과 온천 (조잔케이)</h3>
+            <p class="text-xs text-gray-500 mb-6">9/28 (토)</p>
+            
+            <div class="relative">
+                <div class="absolute left-[23px] top-2 bottom-6 w-[2px] bg-gray-200"></div>
+                
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">09:30</div>
+                    <div class="flex-1 pl-4 pt-1">삿포로역 버스터미널 출발 🚌</div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-bus bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">갓파라이너 버스 (약 60분 / 편도 960엔, 사전예약 권장)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">11:00</div>
+                    <div class="flex-1 pl-4 pt-1">호헤이쿄 댐 단풍 구경 🍁
+                        <a href="https://www.google.com/maps/search/?api=1&query=호헤이쿄+댐" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                    </div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-bus bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">친환경 전기버스 환승 (주차장↔댐, 약 10분)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">14:00</div>
+                    <div class="flex-1 pl-4 pt-1">호헤이쿄 온천 & 인도카레 점심 ♨️
+                        <a href="https://www.google.com/maps/search/?api=1&query=호헤이쿄+온천" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                    </div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-bus bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">갓파라이너 버스 복귀 (약 60분)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">18:00</div>
+                    <div class="flex-1 pl-4 pt-1">시내 복귀 후 위스키 & 돈키호테 쇼핑 🛍️</div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-walking bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">도보 (상점가 주변)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">20:00</div>
+                    <div class="flex-1 pl-4 pt-1">저녁: 해산물 이자카야 또는 게 요리 🦀
+                        <a href="https://www.google.com/maps/search/?api=1&query=삿포로+효세쓰노몬" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 대체 일정 (Day 3) -->
+            <div class="mt-8 bg-white border border-momiji/20 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                <div class="absolute right-0 top-0 w-16 h-16 bg-momiji/5 rounded-bl-full"></div>
+                <div class="flex items-center gap-2 font-bold text-momiji mb-2 relative z-10">
+                    <i class="fas fa-random"></i>
+                    <span>추천 대체 일정</span>
+                </div>
+                <h4 class="font-bold text-sumi text-sm mb-1 relative z-10">조잔케이 대신 ➡️ 시로이 코이비토 파크 & 모이와야마 야경</h4>
+                <p class="text-xs text-gray-600 leading-relaxed relative z-10">
+                    <span class="font-semibold text-gray-800">추천 이유:</span> 버스를 오래 타는 외곽 온천 일정이 피곤하거나 혹시라도 비가 온다면 추천합니다. 지하철로 이동 가능한 예쁜 유럽풍 초콜릿 테마파크를 구경하고, 저녁엔 로프웨이를 타고 일본 3대 야경인 모이와야마 정상에서 낭만적인 야경을 감상할 수 있습니다.
+                </p>
+            </div>
+        </div>
+
+        <!-- Day 4 Content -->
+        <div id="content-day4" class="day-content hidden animate-[fadeIn_0.3s_ease-in-out]">
+            <h3 class="font-bold text-lg text-sumi mb-1">아쉬운 안녕</h3>
+            <p class="text-xs text-gray-500 mb-6">9/29 (일)</p>
+            
+            <div class="relative">
+                <div class="absolute left-[23px] top-2 bottom-6 w-[2px] bg-gray-200"></div>
+                
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">09:00</div>
+                    <div class="flex-1 pl-4 pt-1">니조시장 카이센동 아침식사 🍚
+                        <a href="https://www.google.com/maps/search/?api=1&query=삿포로+니조시장" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                    </div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-subway bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">도보 또는 지하철 (약 5~10분)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">10:30</div>
+                    <div class="flex-1 pl-4 pt-1">홋카이도 대학 은행나무 길 🌳
+                        <a href="https://www.google.com/maps/search/?api=1&query=홋카이도+대학+은행나무길" target="_blank" class="ml-1 text-momiji"><i class="fas fa-map-marker-alt"></i></a>
+                    </div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-walking bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">도보 (삿포로역 부근으로 이동, 약 10~15분)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">12:00</div>
+                    <div class="flex-1 pl-4 pt-1">삿포로역 다이마루 백화점 쇼핑 & 점심</div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-train bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">JR 쾌속 에어포트 (약 40분 / 1,150엔)</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">14:00</div>
+                    <div class="flex-1 pl-4 pt-1">신치토세 공항으로 이동 & 라멘도장</div>
+                </div>
+                <div class="flex relative z-10 mb-3">
+                    <div class="w-12"></div>
+                    <div class="flex-1 pl-4 flex items-center gap-2">
+                        <i class="fas fa-plane bg-gray-200 p-1.5 rounded-full text-gray-600 text-[10px]"></i>
+                        <span class="bg-gray-100 px-2 py-1 rounded-md text-xs text-gray-600">탑승 수속 및 대기</span>
+                    </div>
+                </div>
+
+                <div class="flex relative z-10 mb-1">
+                    <div class="w-12 font-bold text-momiji bg-washi py-1">18:00</div>
+                    <div class="flex-1 pl-4 pt-1">삿포로 출발 ✈️</div>
+                </div>
+            </div>
+
+            <!-- 대체 일정 (Day 4) -->
+            <div class="mt-8 bg-white border border-momiji/20 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                <div class="absolute right-0 top-0 w-16 h-16 bg-momiji/5 rounded-bl-full"></div>
+                <div class="flex items-center gap-2 font-bold text-momiji mb-2 relative z-10">
+                    <i class="fas fa-random"></i>
+                    <span>추천 대체 일정</span>
+                </div>
+                <h4 class="font-bold text-sumi text-sm mb-1 relative z-10">시내 투어 대신 ➡️ 신치토세 공항 딥 다이브!</h4>
+                <p class="text-xs text-gray-600 leading-relaxed relative z-10">
+                    <span class="font-semibold text-gray-800">추천 이유:</span> 삿포로 공항(국내선 터미널)은 하나의 거대한 테마파크 같습니다. 로이즈 초콜릿 월드, 도라에몽 스카이파크, 공항 온천, 수많은 디저트 매장이 모여있습니다. 마지막 날 짐 들고 다니기 귀찮다면, 아침 일찍 공항으로 넘어가서 놀고 먹고 쇼핑하는 것을 적극 추천합니다!
+                </p>
+            </div>
+        </div>
+
+        <!-- 기타 추천 여행지 Content -->
+        <div id="content-extra" class="day-content hidden animate-[fadeIn_0.3s_ease-in-out]">
+            <h3 class="font-bold text-lg text-sumi mb-1">놓치기 아쉬운 옵션들 🔍</h3>
+            <p class="text-xs text-gray-500 mb-6">일정에 없지만 많은 분들이 찾는 핫플레이스 총정리!</p>
+
+            <div class="space-y-5">
+                <!-- 볼거리 -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-matcha/10 rounded-full"></div>
+                    <h4 class="font-bold text-matcha mb-3 flex items-center gap-2 relative z-10"><i class="fas fa-camera-retro"></i> 볼거리 & 산책</h4>
+                    <ul class="text-sm text-gray-600 space-y-3 relative z-10">
+                        <li class="flex gap-2">
+                            <span class="text-matcha font-bold mt-0.5">•</span>
+                            <div><b class="text-sumi">모에레누마 공원:</b> 조각가 이사무 노구치가 설계한 독특한 예술 공원. 자전거 대여해서 산책하기 최고! (시내에서 버스로 이동)</div>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-matcha font-bold mt-0.5">•</span>
+                            <div><b class="text-sumi">홋카이도 신궁 & 마루야마 공원:</b> 울창한 숲 속에 있는 신사. 아침 일찍 맑은 공기 마시며 힐링 산책하기 좋은 코스.</div>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-matcha font-bold mt-0.5">•</span>
+                            <div><b class="text-sumi">구 본청사(아카렌가) & 시계탑:</b> 삿포로 시내 한복판의 클래식한 포토존. 오며 가며 사진 남기기 좋아요. (구 본청사는 보수 공사 중일 수 있으니 외관만 확인!)</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 먹거리 -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-momiji/10 rounded-full"></div>
+                    <h4 class="font-bold text-momiji mb-3 flex items-center gap-2 relative z-10"><i class="fas fa-utensils"></i> 맛집 & 디저트</h4>
+                    <ul class="text-sm text-gray-600 space-y-3 relative z-10">
+                        <li class="flex gap-2">
+                            <span class="text-momiji font-bold mt-0.5">•</span>
+                            <div><b class="text-sumi">라멘(새우탕면):</b> 에비소바 이치겐 (스스키노 본점 또는 공항점 강추! 진한 새우 육수가 일품)</div>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-momiji font-bold mt-0.5">•</span>
+                            <div><b class="text-sumi">스프카레 대안:</b> 가라쿠 외에도 스아게플러스, 사무라이, 오쿠시바쇼텐(새우육수) 등 훌륭한 곳이 아주 많습니다.</div>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-momiji font-bold mt-0.5">•</span>
+                            <div><b class="text-sumi">야키토리 쿠시도리:</b> 저렴하고 맛있는 가성비 꼬치구이 체인점. 밤에 가볍게 맥주 한잔하기 최고!</div>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-momiji font-bold mt-0.5">•</span>
+                            <div><b class="text-sumi">롯카테이 본점:</b> 마루세이 버터샌드로 유명. 본점 2층 카페에서 먹는 삿포로 본점 한정 '마루세이 아이스 샌드'가 별미.</div>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-momiji font-bold mt-0.5">•</span>
+                            <div><b class="text-sumi">유키지루시 파라:</b> 삿포로 전통 파르페 명가. 홋카이도 우유로 만든 진한 아이스크림을 즐길 수 있습니다.</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 야경 -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-blue-50 rounded-full"></div>
+                    <h4 class="font-bold text-blue-600 mb-3 flex items-center gap-2 relative z-10"><i class="fas fa-moon"></i> 야경 & 전망대</h4>
+                    <ul class="text-sm text-gray-600 space-y-3 relative z-10">
+                        <li class="flex gap-2">
+                            <span class="text-blue-600 font-bold mt-0.5">•</span>
+                            <div><b class="text-sumi">JR 타워 전망대 T38:</b> 삿포로역 바로 위. 야외가 아니라 쾌적하고 삿포로 시내가 반듯하게 보이는 최고의 뷰.</div>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-blue-600 font-bold mt-0.5">•</span>
+                            <div><b class="text-sumi">노리아(Noria) 관람차:</b> 스스키노 야경을 공중에서 천천히 내려다보는 도심 속 옥상 관람차 (노르베사 건물).</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 체험 -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-amber-50 rounded-full"></div>
+                    <h4 class="font-bold text-amber-600 mb-3 flex items-center gap-2 relative z-10"><i class="fas fa-beer"></i> 체험 & 쇼핑</h4>
+                    <ul class="text-sm text-gray-600 space-y-3 relative z-10">
+                        <li class="flex gap-2">
+                            <span class="text-amber-600 font-bold mt-0.5">•</span>
+                            <div><b class="text-sumi">삿포로 맥주 박물관:</b> 삿포로 블랙라벨, 클래식 등 갓 뽑은 맥주 샘플러 테이스팅 (옆 기린 비어가든에서 무한리필 징기스칸도 가능).</div>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-amber-600 font-bold mt-0.5">•</span>
+                            <div><b class="text-sumi">삿포로 팩토리:</b> 옛 맥주 공장을 개조한 대형 복합 쇼핑몰. 실내 온실 정원 같은 분위기가 멋진 곳.</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 2. 숙소 (Accommodation) -->
+    <div id="view-accomm" class="app-view">
+        <div class="sub-header">
+            <button onclick="goHome()" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+            <h2 class="font-bold text-lg text-sumi">숙소 가이드</h2>
+            <div class="w-10"></div>
+        </div>
+
+        <div class="p-5 space-y-5">
+            <!-- Info Card -->
+            <div class="bg-matcha text-white rounded-2xl p-5 shadow-md relative overflow-hidden">
+                <i class="fas fa-hotel absolute -right-4 -bottom-4 text-6xl opacity-20"></i>
+                <h3 class="font-bold text-lg mb-2 relative z-10">어디에 묵을까요?</h3>
+                <p class="text-sm opacity-90 relative z-10 leading-relaxed">
+                    렌터카가 없으므로 3박 모두 <b>같은 호텔(연박)</b>을 추천합니다.<br>이름을 누르면 구글 맵으로 이동해요!
+                </p>
+            </div>
+
+            <!-- Option 1 -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="bg-gray-50 border-b border-gray-100 p-4 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-matcha tracking-wide border border-matcha/30 bg-matcha/5 px-2 py-1 rounded">교통 최우선</span>
+                        <h4 class="font-bold text-lg text-sumi mt-1">삿포로역 주변</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-500"><i class="fas fa-train"></i></div>
+                </div>
+                <div class="p-4">
+                    <p class="text-sm text-gray-600 mb-3">공항/오타루 이동에 최고. 다이마루 백화점이 바로 옆입니다.</p>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-matcha mt-1"></i>
+                            <div>
+                                <a href="https://www.google.com/maps/search/?api=1&query=JR+타워+호텔+닛코+삿포로" target="_blank" class="font-bold text-sumi underline decoration-gray-300 underline-offset-2">JR 타워 호텔 닛코 삿포로</a>
+                                <p class="text-xs text-gray-500 mt-0.5">최고층 야경 뷰, 고급스러운 시설</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-matcha mt-1"></i>
+                            <div>
+                                <a href="https://www.google.com/maps/search/?api=1&query=크로스+호텔+삿포로" target="_blank" class="font-bold text-sumi underline decoration-gray-300 underline-offset-2">크로스 호텔 삿포로</a>
+                                <p class="text-xs text-gray-500 mt-0.5">트렌디한 디자인, 멋진 대욕장</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Option 2 -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="bg-gray-50 border-b border-gray-100 p-4 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-momiji tracking-wide border border-momiji/30 bg-momiji/5 px-2 py-1 rounded">미식 & 나이트라이프</span>
+                        <h4 class="font-bold text-lg text-sumi mt-1">스스키노 주변</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-500"><i class="fas fa-beer"></i></div>
+                </div>
+                <div class="p-4">
+                    <p class="text-sm text-gray-600 mb-3">징기스칸, 위스키 바, 돈키호테 쇼핑 후 걸어오기 좋습니다.</p>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-momiji mt-1"></i>
+                            <div>
+                                <a href="https://www.google.com/maps/search/?api=1&query=OMO3+삿포로+스스키노" target="_blank" class="font-bold text-sumi underline decoration-gray-300 underline-offset-2">OMO3 삿포로 스스키노</a>
+                                <p class="text-xs text-gray-500 mt-0.5">호시노 리조트 계열, 젊고 깔끔한 감성</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-momiji mt-1"></i>
+                            <div>
+                                <a href="https://www.google.com/maps/search/?api=1&query=베셀+호텔+캄파나+스스키노" target="_blank" class="font-bold text-sumi underline decoration-gray-300 underline-offset-2">베셀 호텔 캄파나 스스키노</a>
+                                <p class="text-xs text-gray-500 mt-0.5">넓은 대욕장과 훌륭한 조식</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Option 3 -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="bg-gray-50 border-b border-gray-100 p-4 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-tsuchi tracking-wide border border-tsuchi/30 bg-tsuchi/5 px-2 py-1 rounded">자연 & 로맨틱 힐링</span>
+                        <h4 class="font-bold text-lg text-sumi mt-1">나카지마 공원 주변</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-500"><i class="fas fa-tree"></i></div>
+                </div>
+                <div class="p-4">
+                    <p class="text-sm text-gray-600 mb-3">스스키노 도보 10분, 하지만 아침 공원 산책이 예술입니다.</p>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-tsuchi mt-1"></i>
+                            <div>
+                                <a href="https://www.google.com/maps/search/?api=1&query=호텔+마이스테이스+프리미어+삿포로+파크" target="_blank" class="font-bold text-sumi underline decoration-gray-300 underline-offset-2">마이스테이스 프리미어 삿포로 파크</a>
+                                <p class="text-xs text-gray-500 mt-0.5">시내에서 드문 '천연 온천' 보유</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-tsuchi mt-1"></i>
+                            <div>
+                                <a href="https://www.google.com/maps/search/?api=1&query=프리미어+호텔+나카지마+파크+삿포로" target="_blank" class="font-bold text-sumi underline decoration-gray-300 underline-offset-2">프리미어 호텔 나카지마 파크</a>
+                                <p class="text-xs text-gray-500 mt-0.5">탁 트인 파크뷰, 조용하고 고급스러운 휴식</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 3. 예산 (Budget) -->
+    <div id="view-budget" class="app-view">
+        <div class="sub-header">
+            <button onclick="goHome()" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+            <h2 class="font-bold text-lg text-sumi">예상 경비 & 환전</h2>
+            <div class="w-10"></div>
+        </div>
+
+        <div class="p-5">
+            <!-- 인포그래픽 느낌의 총액 표시 -->
+            <div class="bg-sakura text-white rounded-3xl p-6 mb-6 text-center shadow-md">
+                <p class="text-sm opacity-90 mb-1">2인 기준 예상 현지 경비</p>
+                <div class="text-3xl font-bold tracking-tight">105 ~ 135<span class="text-xl font-normal opacity-80 ml-1">만원</span></div>
+                <p class="text-xs opacity-75 mt-2">*항공권, 쇼핑(위스키 등) 비용 제외</p>
+            </div>
+
+            <!-- 상세 내역 바 차트 느낌 -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6 space-y-5">
+                <!-- 항목 1 -->
+                <div>
+                    <div class="flex justify-between text-sm font-bold text-sumi mb-1">
+                        <span class="flex items-center gap-2"><i class="fas fa-bed text-sakura"></i> 숙박비 (3박)</span>
+                        <span>45~60만원</span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2 mb-1">
+                        <div class="bg-sakura h-2 rounded-full" style="width: 45%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500">1박 15~20만원 선 (가을 성수기 4성급/대욕장 기준)</p>
+                </div>
+                <!-- 항목 2 -->
+                <div>
+                    <div class="flex justify-between text-sm font-bold text-sumi mb-1">
+                        <span class="flex items-center gap-2"><i class="fas fa-utensils text-sakura"></i> 식비 (4일)</span>
+                        <span>50~60만원</span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2 mb-1">
+                        <div class="bg-sakura h-2 rounded-full opacity-80" style="width: 40%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500">조/중식 5~8만, 석식(게 요리, 바 등) 10~15만</p>
+                </div>
+                <!-- 항목 3 -->
+                <div>
+                    <div class="flex justify-between text-sm font-bold text-sumi mb-1">
+                        <span class="flex items-center gap-2"><i class="fas fa-train text-sakura"></i> 교통/기타</span>
+                        <span>10~15만원</span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2 mb-1">
+                        <div class="bg-sakura h-2 rounded-full opacity-60" style="width: 15%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500">공항 왕복, 오타루/조잔케이 이동, 시내 교통비 등</p>
+                </div>
+            </div>
+
+            <!-- 환전 팁 카드 -->
+            <div class="bg-[#FDF9F9] border border-sakura/30 rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-full bg-sakura/20 text-sakura flex items-center justify-center text-lg">
+                        <i class="fas fa-yen-sign"></i>
+                    </div>
+                    <h3 class="font-bold text-sumi">환전은 얼마나 할까요?</h3>
+                </div>
+                <p class="text-sm text-gray-700 leading-relaxed mb-3">
+                    요즘 일본은 <b>트래블로그/트래블월릿</b> 카드로 대부분 결제가 가능합니다. (편의점, 백화점, 일반 식당)
+                </p>
+                <div class="bg-white p-3 rounded-xl border border-gray-100 text-sm mb-3 text-gray-600">
+                    <span class="font-bold text-sakura block mb-1">현금이 꼭 필요한 곳:</span>
+                    <ul class="list-disc list-inside space-y-1 text-xs">
+                        <li>니조시장 (해산물 현금결제 많음)</li>
+                        <li>로컬 라멘집, 작은 꼬치구이집</li>
+                        <li>대중교통 교통카드 충전 시</li>
+                    </ul>
+                </div>
+                <p class="text-sm font-bold text-sumi text-center bg-sakura/10 p-2 rounded-lg">
+                    👉 2인 기준 약 3~40,000엔만 현금 준비!
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 4. 꿀팁 (Tips) -->
+    <div id="view-tips" class="app-view">
+        <div class="sub-header">
+            <button onclick="goHome()" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+            <h2 class="font-bold text-lg text-sumi">쇼핑 & 꿀팁</h2>
+            <div class="w-10"></div>
+        </div>
+
+        <div class="p-5 space-y-4">
+            
+            <!-- 위스키 쇼핑 -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-20 h-20 bg-amber-50 rounded-full"></div>
+                <h3 class="font-bold text-lg text-sumi flex items-center gap-2 mb-3 relative z-10">
+                    <i class="fas fa-glass-whiskey text-amber-600"></i> 위스키 쇼핑 명소
+                </h3>
+                <ul class="text-sm text-gray-600 space-y-3 relative z-10">
+                    <li class="flex gap-2">
+                        <span class="text-amber-600 font-bold mt-0.5">•</span>
+                        <div><b>야마야 (Yamaya):</b> 스스키노 근처. 가장 대중적이고 넓은 주류 상회 (텍스프리).</div>
+                    </li>
+                    <li class="flex gap-2">
+                        <span class="text-amber-600 font-bold mt-0.5">•</span>
+                        <div><b>리커 마운틴 스스키노점:</b> 다양한 라인업 보유, 밤 늦게까지 영업.</div>
+                    </li>
+                    <li class="flex gap-2">
+                        <span class="text-amber-600 font-bold mt-0.5">•</span>
+                        <div><b>메가 돈키호테:</b> 산토리 가쿠빈, 야마자키 등. (입고는 복불복)</div>
+                    </li>
+                    <li class="flex gap-2">
+                        <span class="text-amber-600 font-bold mt-0.5">•</span>
+                        <div><b>백화점 (다이마루 등):</b> 아침에 '야마자키/히비키' 추첨 행사나 오픈런이 열리기도 합니다.</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 일반 쇼핑 -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="font-bold text-lg text-sumi flex items-center gap-2 mb-3">
+                    <i class="fas fa-shopping-bag text-tsuchi"></i> 필수 쇼핑 리스트
+                </h3>
+                <div class="space-y-3 text-sm text-gray-600">
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <span class="font-bold text-sumi block mb-1">다이마루 백화점</span>
+                        명품 손수건(비비안웨스트우드 등 1~2만원대, 선물용 최고), 바움쿠헨(키노토야)
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <span class="font-bold text-sumi block mb-1">돈키호테 / 드럭스토어</span>
+                        오타이산, 카베진, 알포트 초콜릿, 니베아 복숭아 립밤
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <span class="font-bold text-sumi block mb-1">공항 면세점 (마지막 날)</span>
+                        로이즈 생초콜릿(보냉팩 포장), 르타오 치즈케익, 시로이코이비토
+                    </div>
+                </div>
+            </div>
+
+            <!-- 주의사항 -->
+            <div class="bg-[#FDF9F9] p-5 rounded-2xl shadow-sm border border-momiji/20">
+                <h3 class="font-bold text-sumi flex items-center gap-2 mb-2">
+                    <i class="fas fa-exclamation-circle text-momiji"></i> 식당 예약은 필수!
+                </h3>
+                <p class="text-sm text-gray-700">
+                    유명한 징기스칸(양고기), 게 요리집은 저녁에 워크인(그냥 방문) 시 1~2시간 대기가 기본입니다. 한국에서 미리 <b>구글 맵</b>이나 <b>타베로그(Tabelog)</b>를 통해 꼭 예약하고 가세요!
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // View switching logic (Grid Menu <-> Detail Pages)
+    function showView(viewId) {
+        // Hide all views
+        document.querySelectorAll('.app-view').forEach(view => {
+            view.classList.remove('active');
+        });
+        
+        // Show target view
+        document.getElementById('view-' + viewId).classList.add('active');
+        
+        // Scroll to top
+        window.scrollTo(0, 0);
+
+        // 일정 탭을 열 때 첫 번째 날짜가 열려있게 함
+        if(viewId === 'schedule') {
+            showDay('day1');
+        }
+    }
+
+    // Go back to main home grid
+    function goHome() {
+        showView('home');
+    }
+
+    // 탭 방식 일정 보기 로직
+    function showDay(dayId) {
+        // 모든 내용 숨기기
+        document.querySelectorAll('.day-content').forEach(el => {
+            el.classList.add('hidden');
+            el.classList.remove('block');
+        });
+        
+        // 모든 탭 스타일 초기화
+        document.querySelectorAll('.day-tab').forEach(el => {
+            el.classList.remove('bg-momiji', 'text-white', 'shadow-sm');
+            el.classList.add('bg-white', 'text-gray-500', 'border-gray-200');
+        });
+
+        // 선택된 내용 보이기
+        const targetContent = document.getElementById('content-' + dayId);
+        if (targetContent) {
+            targetContent.classList.remove('hidden');
+            targetContent.classList.add('block');
+        }
+
+        // 선택된 탭 스타일 적용
+        const targetTab = document.getElementById('tab-' + dayId);
+        if (targetTab) {
+            targetTab.classList.remove('bg-white', 'text-gray-500', 'border-gray-200');
+            targetTab.classList.add('bg-momiji', 'text-white', 'shadow-sm');
+        }
+    }
+</script>
+
+</body>
+</html>
+
+
+
+
+
